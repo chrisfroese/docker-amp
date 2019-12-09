@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  memcached:
+    image: memcached:alpine
+    container_name: php74-docker-memcached
+
+  redis:
+    image: redis:alpine
+    container_name: php74-docker-redis
+    
+  php-apache:
+    build:
+        context: ./php-apache
+    container_name: php74-docker-apache-php
+    ports: 
+      - 8888:80
+    volumes:
+      - ./public_html:/var/www/html
+    links:
+      - 'mariadb'
+
+  mariadb:
+    image: mariadb:10.4
+    container_name: php74-docker-mariadb
+    volumes:
+        - database:/var/lib/mysql
+    # Set env variables
+    environment:
+        TZ: 'America/Denver'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+        MYSQL_ROOT_PASSWORD: 'password'
+        MYSQL_USER: 'maria'
+        MYSQL_PASSWORD: 'password'
+        MYSQL_DATABASE: 'testdb'
+  
+volumes:
+  mariadb:
